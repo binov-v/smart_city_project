@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 align="center">Works log</h2>
+{% if current_user.is_authenticated %}
+<div>
+    <a href="/addjob" class="btn btn-secondary">
+        Добавить
+    </a>
+    <a href="/departments" class="btn btn-primary">
+        Смотреть департаменты
+    </a>
+</div>
+{% endif %}
+{% for job in jobs%}
+<h3>Action # {{job.id}}</h3>
+<div class="table_container">
+    <table class="my_table">
+        <tr class="my_row">
+            <td class="title" width="400px" bgcolor="#dddddd">Title of activity</td>
+            <td class="title" width="150px" bgcolor="#dddddd">Team leader</td>
+            <td class="title" width="100px" bgcolor="#dddddd" align="center">Duration</td>
+            <td class="title" width="200px" bgcolor="#dddddd" align="center">List of collaborators</td>
+            <td class="title" width="200px" bgcolor="#dddddd" align="center">Hazard category</td>
+            <td class="title" width="200px" bgcolor="#dddddd" align="center">Is finished</td>
+        </tr>
+        <tr class="my_row">
+            <td class="ordinary" bgcolor="#eeeeff">{{ job.job.capitalize() }}</td>
+            <td class="ordinary" bgcolor="#eeeeff">{{ names[job.team_leader][0] }} {{ names[job.team_leader][1] }}</td>
+            <td class="ordinary" bgcolor="#eeeeff" align="center">{{ job.work_size }} hours</td>
+            <td class="ordinary" bgcolor="#eeeeff" align="center">{{ job.collaborators }}</td>
+            <td class="ordinary" bgcolor="#eeeeff" align="center">
+                {% for cat in job.categories %}
+                {{ cat.hazard_lvl }}{% if not loop.last %}, {% endif %}
+                {% else %}
+                Нет категории
+                {% endfor %}
+            </td>
+            {% if job.is_finished %}
+            <td class="ordinary" bgcolor="#eeffee" align="center">Finished</td>
+            {% else %}
+            <td class="ordinary" bgcolor="#ffeeff" align="center">Is not finished</td>
+            {% endif %}
+        </tr>
+    </table>
+    {% if current_user.is_authenticated and (current_user.id == job.team_leader or current_user.id == 1) %}
+    <div>
+        <a href="/edit_job/{{ job.id }}" class="btn btn-warning">
+            Изменить
+        </a>
+        <a href="/jobs_delete/{{ job.id }}" class="btn btn-danger">
+            Удалить
+        </a>
+    </div>
+    {% endif %}
+</div>
+<br>
+{% endfor %}
+{% endblock %}
