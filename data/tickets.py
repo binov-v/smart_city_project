@@ -18,6 +18,6 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
     appeal_photo_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     is_solved = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
     stated_department = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("departments.id"), nullable=True)
-    dep_rel = orm.relationship("Departments", back_populates="ticket_rel")
+    dep_rel = orm.relationship("Department", back_populates="ticket_rel")
 
     owner = orm.relationship("User", back_populates="tickets")

@@ -42,7 +42,7 @@ def load_user(user_id):
 @app.route("/")
 def index():
     db_sess = db_session.create_session()
-    return '<h1>База данных готова</h1>'
+    return render_template(f'index.html', title='Вот так вот')
 #
 #
 # @app.route("/departments")

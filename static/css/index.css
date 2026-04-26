@@ -1,0 +1,76 @@
+body {
+    background: #D9E2FF;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: 380px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.my-colored-container {
+    background: linear-gradient(135deg, #7ed7de 0%, #5ea0d6 100%);
+    width: 770px;
+    height: 610px;
+    border-radius: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    box-sizing: border-box;
+}
+
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.field {
+    width: 85%;
+    margin-bottom: 40px;
+}
+
+.field input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(120, 120, 120, 0.8);
+    outline: none;
+    padding: 12px 0;
+    font-size: 28px;
+    color: white;
+}
+
+.field input::placeholder {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 28px;
+}
+
+.login-btn,
+.register-btn {
+    width: 78%;
+    height: 60px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 26px;
+    margin-top: 28px;
+    cursor: pointer;
+}
+
+.login-btn {
+    background: #4aa2ff;
+}
+
+.register-btn {
+    background: #2490ff;
+    font-weight: 600;
+}

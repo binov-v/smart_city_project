@@ -23,6 +23,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     role = orm.relationship("Role", back_populates="users")
     tickets = orm.relationship("Ticket", back_populates="owner")
     department = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("departments.id"), nullable=True)
+    dep_rel = orm.relationship("Department", foreign_keys="[Department.chief]", back_populates="chief_rel")
 
     def __repr__(self):
         return f"<User> {self.id} {self.surname} {self.name}"
