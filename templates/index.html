@@ -9,15 +9,14 @@
 <body>
     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="логотип сайта"
          class="logo">
-
-    <div class="my-colored-container">
+    <div class="register-container">
         <form class="login-form">
             <div class="field">
-                <input type="email" placeholder="Логин">
+                <input type="email" id="email" placeholder="Почта">
             </div>
 
             <div class="field">
-                <input type="password" placeholder="Пароль">
+                <input type="password" id="password" placeholder="Пароль">
             </div>
 
             <button type="submit" class="login-btn" style="margin-bottom: 50px;">Войти</button>

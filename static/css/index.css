@@ -1,5 +1,10 @@
 body {
-    background: #D9E2FF;
+    background-color: #D9E2FF;
+    background-image: url('../images/bg_houses.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
     margin: 0;
     min-height: 100vh;
     display: flex;
@@ -9,12 +14,12 @@ body {
 }
 
 .logo {
-    width: 380px;
+    width: 420px;
     height: auto;
     margin-bottom: 20px;
 }
 
-.my-colored-container {
+.register-container {
     background: linear-gradient(135deg, #7ed7de 0%, #5ea0d6 100%);
     width: 770px;
     height: 610px;
@@ -64,13 +69,50 @@ body {
     font-size: 26px;
     margin-top: 28px;
     cursor: pointer;
+    transition: 0.2s ease;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .login-btn {
-    background: #4aa2ff;
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .register-btn {
-    background: #2490ff;
+    background: rgba(255, 255, 255, 0.25);
     font-weight: 600;
+}
+
+.login-btn:hover {
+    background: #3c94f0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.register-btn:hover {
+    background: #1486f5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.login-btn:active {
+    background: #2f7fd0;
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.register-btn:active {
+    background: #0f6fcf;
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.login-btn:disabled,
+.register-btn:disabled {
+    background: #8fbce6;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
 }
