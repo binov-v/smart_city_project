@@ -7,20 +7,31 @@
     <title>{{ title }}</title>
 </head>
 <body>
-    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="логотип сайта"
-         class="logo">
+    <div class="bottom-bg"></div>
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="логотип сайта" class="logo">
+
     <div class="register-container">
-        <form class="login-form">
+        <form class="login-form" action="" method="post">
+            {{ form.hidden_tag() }}
+            {% if message %}
+                <div class="error-message" style="color: red; margin-bottom: 22px; text-align: center;">
+                    {{ message }}
+                </div>
+            {% endif %}
             <div class="field">
-                <input type="email" id="email" placeholder="Почта">
+                {{ form.email(id="email", placeholder="Почта") }}
+                {% for error in form.email.errors %}
+                    <span style="color: red; font-size: 22px;">{{ error }}</span>
+                {% endfor %}
             </div>
-
             <div class="field">
-                <input type="password" id="password" placeholder="Пароль">
+                {{ form.password(id="password", placeholder="Пароль") }}
+                {% for error in form.password.errors %}
+                    <span style="color: red; font-size: 22px;">{{ error }}</span>
+                {% endfor %}
             </div>
-
-            <button type="submit" class="login-btn" style="margin-bottom: 50px;">Войти</button>
-            <button type="button" class="register-btn">Зарегистрироваться</button>
+            {{ form.submit(class="login-btn", style="margin-bottom: 50px;") }}
+            <button type="button" class="register-btn" onclick="window.location.href='/register';">Зарегистрироваться</button>
         </form>
     </div>
 </body>
