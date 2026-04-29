@@ -10,6 +10,7 @@ from data.add_job import AddJobForm
 from data.add_dep import AddDepForm
 from data.departments import Department
 from flask_restful import reqparse, abort, Api, Resource
+from waitress import serve
 
 app = Flask(__name__)
 api = Api(app)
@@ -76,6 +77,11 @@ def register():
         db_sess.commit()
         return redirect('/login_or_register')
     return render_template('register.html', title='Регистрация', form=form)
+
+
+@app.route('/master', methods=['GET', 'POST'])
+def master_page():
+    return render_template('master.html')
 
 
 #
@@ -238,10 +244,9 @@ def register():
 #
 
 
-
 def main():
     db_session.global_init("db/smart_city.db")
-    app.run()
+    app.run(host='127.0.0.1', port=3000)
 
 
 if __name__ == '__main__':
