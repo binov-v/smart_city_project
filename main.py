@@ -246,7 +246,7 @@ def master_page():
 
 def main():
     db_session.global_init("db/smart_city.db")
-    serve(app, host='0.0.0.0', port=5000)
+    app.run(host='localhost', port=5000)
 
 
 if __name__ == '__main__':

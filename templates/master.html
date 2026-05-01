@@ -3,6 +3,24 @@
   <head>
     <title>Быстрый старт. Размещение интерактивной карты на странице</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+        .custom-marker {
+        position: relative;
+        width: 43px;
+        height: 65px;
+        cursor: pointer;
+        transform: translate(-50%, -100%);
+    }
+
+        .marker-image {
+            width: 100%;
+            height: 100%;
+        }
+
+        .marker-image:hover {
+            transform: scale(1.1);
+        }
+    </style>
     <script src="https://api-maps.yandex.ru/v3/?apikey=9b29f72a-66c1-4c94-9052-8f3bfef5e7f6&lang=ru_RU"></script>
     <script>
         initMap();
@@ -10,7 +28,7 @@
         async function initMap() {
             await ymaps3.ready;
 
-            const {YMap, YMapDefaultSchemeLayer} = ymaps3;
+            const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker, YMapListener} = ymaps3;
 
             const map = new YMap(
                 document.getElementById('map'),
@@ -21,13 +39,62 @@
                     }
                 }
             );
+            const schemeLayer = new YMapDefaultSchemeLayer();
+            map.addChild(schemeLayer);
 
-            map.addChild(new YMapDefaultSchemeLayer());
+            const markersLayer = new YMapDefaultFeaturesLayer();
+            map.addChild(markersLayer);
+
+            function createMarkerElement() {
+                const markerElement = document.createElement('div');
+                markerElement.className = 'custom-marker';
+
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'marker-image';
+                imgDiv.style.backgroundImage = 'url("../static/images/point_img.png")';
+                imgDiv.style.backgroundSize = 'contain';
+                imgDiv.style.backgroundRepeat = 'no-repeat';
+
+                markerElement.appendChild(imgDiv);
+
+                const title = document.createElement('span');
+                title.innerText = 'Я здесь';
+                title.style.cssText = 'position:absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-weight: bold; white-space: nowrap;';
+                markerElement.appendChild(title);
+
+                return markerElement;
+            }
+
+            const clickListener = new YMapListener({
+            layer: 'any',
+            onClick: (object, event) => {
+                if (object) {
+                    const lon = object.entity.coordinates[0];
+                    const lat = object.entity.coordinates[1];
+                    const aboutMarker = document.createElement('div');
+                    console.log(lon)
+                    console.log(lat)
+                    aboutMarker.innerHTML = `<h1>Очень классная метка. Координаты: ${lon.toFixed(5)}, ${lat.toFixed(5)}</h1>`;
+                    document.body.appendChild(aboutMarker);
+                    return;
+                    }
+                const coords = event.coordinates;
+
+                const newMarker = new YMapMarker(
+                    { coordinates: coords, draggable: true },
+                    createMarkerElement()
+                );
+
+                map.addChild(newMarker);
+            }
+        });
+
+            map.addChild(clickListener);
         }
     </script>
   </head>
 
   <body>
-    <div id="map" style="width: 600px; height: 400px"></div>
+    <div id="map" style="width: 600px; height: 400px; position: absolute; top: 300px; left: 300px;"></div>
   </body>
 </html>
