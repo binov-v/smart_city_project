@@ -14,9 +14,11 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     appeal_creator = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("users.id"))
     appeal_text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    appeal_address = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     appeal_photo_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     is_solved = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
+    lat = sqlalchemy.Column(sqlalchemy.Float, nullable=False)
+    lon = sqlalchemy.Column(sqlalchemy.Float, nullable=False)
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     stated_department = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("departments.id"), nullable=True)
     dep_rel = orm.relationship("Department", back_populates="ticket_rel")
 

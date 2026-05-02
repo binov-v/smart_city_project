@@ -3,39 +3,66 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
           integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
           crossorigin="anonymous">
     <title>{{title}}</title>
+    {% block scripts %}{% endblock %}
 </head>
 <body>
-<header class="container-fluid mt-3">
-    <nav class="navbar navbar-light bg-light d-flex justify-content-between align-items-center px-3"">
+<header id="header">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
 
-        <h1 class="mb-0">Миссия Колонизация Марса</h1>
+                <a class="navbar-brand" href="#">
+                    <img src="{{ url_for('static', filename='images/logo_brend.png') }}" class="logo-color" alt="Логотип">
+                </a>
 
-        <div class="auth-links">
-            {% if current_user.is_authenticated %}
-            <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
-            {% else %}
-            <div class="d-flex gap-2">
-                <a class="btn btn-primary btn-sm" href="/register">Зарегистрироваться</a>
-                <a class="btn btn-success btn-sm" href="/login">Войти</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="true" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="ticketsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                                Заявки
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="ticketsDropdown">
+                                <li><a class="dropdown-item" href="register.html">Создать заявку</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="register.html">Мои заявки</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto logged">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle user-link" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-link-photo d-inline-block">
+                                    <img src="{{ url_for('static', filename='images/user_photo.png') }}" class="logo-color" alt="Фото пользователя">
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item menu-item-logout" href="/logout">Выйти</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            {% endif %}
-        </div>
-
-        <a class="navbar-brand m-0" href="#">Mars One</a>
-
-    </nav>
-    <h4 class="text-muted mt-2 px-3" style="font-weight: 300; opacity: 0.7;">
-        И на Марсе будут яблони цвести!
-    </h4>
+        </nav>
+    </div>
 </header>
 
 <main role="main" class="container mt-4">
     {% block content %}{% endblock %}
 </main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
 </body>
 </html>
