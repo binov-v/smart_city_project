@@ -9,10 +9,10 @@ initMap();
                 {
                     location: {
                         center: [39.8917, 59.2205],
-                        zoom: 11
+                        zoom: 12
                     },
                     restrictMapArea: [[39.7500, 59.1500], [40.0500, 59.3000]],
-                    zoomRange: {min: 11, max: 100}
+                    zoomRange: {min: 12, max: 100}
                 }
             );
             const schemeLayer = new YMapDefaultSchemeLayer();

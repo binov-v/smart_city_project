@@ -40,16 +40,19 @@ def load_user(user_id):
 #     return render_template('login.html', title='Авторизация', form=form)
 #
 #
-@app.route("/login_or_register", methods=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 def index():
-    form = LoginForm()
-    if form.validate_on_submit():
-        session = db_session.create_session()
-        user = session.query(User).filter(User.email == form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=True)
-            return '<h1>Успешно вошли</h1>'
-        return render_template('index.html', message="Неправильный логин или пароль", form=form)
+    if current_user.is_authenticated:
+        return redirect('/master')
+    else:
+        form = LoginForm()
+        if form.validate_on_submit():
+            session = db_session.create_session()
+            user = session.query(User).filter(User.email == form.email.data).first()
+            if user and user.check_password(form.password.data):
+                login_user(user, remember=True)
+                return redirect('/master')
+            return render_template('index.html', message="Неправильный логин или пароль", form=form)
 
     return render_template('index.html', title='Авторизация', form=form)
 
@@ -75,7 +78,7 @@ def register():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        return redirect('/login_or_register')
+        return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -93,11 +96,11 @@ def master_page():
 #     return render_template('departments.html', deps=deps, title='Departments log')
 #
 #
-# @app.route('/logout')
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect('/')
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
 #
 #
 # @app.route('/addjob', methods=['GET', 'POST'])
