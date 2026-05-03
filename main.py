@@ -84,7 +84,9 @@ def register():
 
 @app.route('/master', methods=['GET', 'POST'])
 def master_page():
-    return render_template('master.html')
+    if current_user.is_authenticated:
+        return render_template('master.html')
+    return redirect('/')
 
 
 #

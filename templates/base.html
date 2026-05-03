@@ -40,9 +40,11 @@
                         </li>
                     </ul>
 
+
                     <ul class="navbar-nav ms-auto logged">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle user-link" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>{{ current_user.name }} {{ current_user.surname }}</span>
                                 <div class="user-link-photo d-inline-block">
                                     <img src="{{ url_for('static', filename='images/user_photo.png') }}" class="logo-color" alt="Фото пользователя">
                                 </div>

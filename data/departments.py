@@ -15,4 +15,4 @@ class Department(SqlAlchemyBase, SerializerMixin):
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     chief = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("users.id"))
     chief_rel = orm.relationship("User", foreign_keys=[chief], back_populates="dep_rel")
-    ticket_rel = orm.relationship("Ticket", back_populates="dep_rel")
+    ticket_dep_rel = orm.relationship("Ticket", back_populates="dep_rel")

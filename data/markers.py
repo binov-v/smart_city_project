@@ -11,4 +11,4 @@ class Marker(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     lat = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     lon = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    ticket_rel = orm.relationship("Ticket", back_populates="marker_rel")
+    ticket_mark_rel = orm.relationship("Ticket", back_populates="marker_rel")
