@@ -50,7 +50,7 @@ initMap();
                     const aboutMarker = document.createElement('div');
                     console.log(lon)
                     console.log(lat)
-                    aboutMarker.innerHTML = `<h1>Очень классная метка. Координаты: ${lon.toFixed(5)}, ${lat.toFixed(5)}</h1>`;
+                    aboutMarker.innerHTML = `<h1>Очень классная метка. Координаты: ${lon}, ${lat}</h1>`;
                     document.body.appendChild(aboutMarker);
                     return;
                     }

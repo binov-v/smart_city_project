@@ -3,7 +3,7 @@ body {
     margin: 0;
     background:
       radial-gradient(ellipse 80% 40% at 50% 0%, #FFFFFF 0%, transparent 100%),
-      radial-gradient(ellipse 120% 85% at 50% 60%, #899EEF 0%, transparent 90%),
+      radial-gradient(ellipse 120% 95% at 50% 30%, #899EEF 0%, transparent 90%),
       #CDD8FF;
 }
 

@@ -6,6 +6,7 @@ from data import db_session
 from data.login_form import LoginForm
 from data.register_form import RegisterForm
 from data.users import User
+from data.add_ticket import AddTicketForm
 from data.add_job import AddJobForm
 from data.add_dep import AddDepForm
 from data.departments import Department
@@ -88,6 +89,10 @@ def master_page():
         return render_template('master.html')
     return redirect('/')
 
+@app.route('/master/tickets/new', methods=['GET', 'POST'])
+def new_ticket():
+    form = AddTicketForm()
+    return render_template('add_ticket.html', form=form)
 
 #
 #
