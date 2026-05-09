@@ -7,15 +7,25 @@ from data.login_form import LoginForm
 from data.register_form import RegisterForm
 from data.users import User
 from data.add_ticket import AddTicketForm
-from data.add_job import AddJobForm
-from data.add_dep import AddDepForm
+from data.tickets import Ticket
+from data.markers import Marker
 from data.departments import Department
+from data.stages import Stage
 from flask_restful import reqparse, abort, Api, Resource
+import uuid
+import json
 from waitress import serve
 
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'static/uploads/tickets'
 app = Flask(__name__)
 api = Api(app)
+
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -85,13 +95,84 @@ def register():
 
 @app.route('/master', methods=['GET', 'POST'])
 def master_page():
+    session = db_session.create_session()
+    dep = Department(
+        title='transport',
+        chief=1
+    )
+    session.add(dep)
+    dep = Department(
+        title='improvement_and_eco',
+        chief=1
+    )
+    session.add(dep)
+    dep = Department(
+        title='communal',
+        chief=1
+    )
+    session.add(dep)
+    dep = Department(
+        title='safety',
+        chief=1
+    )
+    session.add(dep)
+    session.commit()
+
+
+    ('transport', 'Дороги и транспорт'),
+    ('improvement', 'Благоустройство и экология'),
+    ('communal', 'ЖКХ'),
+    ('safety', 'Безопасность и правопорядок')
     if current_user.is_authenticated:
         return render_template('master.html')
     return redirect('/')
 
+
 @app.route('/master/tickets/new', methods=['GET', 'POST'])
 def new_ticket():
     form = AddTicketForm()
+
+    if form.validate_on_submit():
+        if form.submit.data:
+            file = form.file.data
+            relative_path = None
+            file_path = None
+
+            if file:
+                filename = str(uuid.uuid4()) + "_" + secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                relative_path = f"uploads/tickets/{filename}"
+            else:
+                return render_template('add_ticket.html', form=form, message="Приложите файл с фото")
+
+            coodinates_str = form.coords.data
+            if not coodinates_str:
+                return render_template('add_ticket.html', form=form, message="Пожалуйста, укажите место на карте!")
+
+            if not form.textarea.data:
+                return render_template('add_ticket.html', form=form, message="Обязательно опишите проблему")
+
+            coodinates_list = json.loads(coodinates_str)
+            session = db_session.create_session()
+
+            marker = Marker(lat=str(coodinates_list[0]),
+                            lon=str(coodinates_list[1]))
+            session.add(marker)
+            session.commit()
+
+            ticket = Ticket(
+                appeal_creator=current_user.id,
+                appeal_text=form.textarea.data,
+                appeal_photo_path=relative_path,
+                process_level=1,
+                marker_id=marker.id,
+            )
+            file.save(file_path)
+            session.add(ticket)
+            session.commit()
+
+            return redirect('/master/tickets')
+
     return render_template('add_ticket.html', form=form)
 
 #

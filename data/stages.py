@@ -10,4 +10,3 @@ class Stage(SqlAlchemyBase, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    ticket_stage_rel = orm.relationship("Ticket", back_populates="stage_rel")

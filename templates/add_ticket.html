@@ -3,36 +3,50 @@
 {% block scripts %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
 <script src="https://api-maps.yandex.ru/v3/?apikey=9b29f72a-66c1-4c94-9052-8f3bfef5e7f6&lang=ru_RU"></script>
-<script src="{{ url_for('static', filename='js/yamap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/yamap_ticket_new.js') }}"></script>
 {% endblock %}
 
 {% block content %}
     <div class="container-md">
-        <form action="" method="post">
-            {{ form.hidden_tag() }}
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
 
-            <p>
-                {{ form.type.label(class="form-label") }}<br>
-                {{ form.type(class="form-select", onchange="this.form.submit()") }}
-                <script>document.querySelector('select[name="type"] option[value=""]').disabled = true;</script>
+        <div class="w-75 mx-auto mb-4 text-start">
+            {{ form.type.label(class="form-label") }}
+            {{ form.type(class="form-select", onchange="this.form.submit()") }}
+            <script>document.querySelector('select[name="type"] option[value=""]').disabled = true;</script>
 
-                {% for error in form.type.errors %}
-                <p class="alert alert-danger" role="alert">
-                    {{error}}
-                </p>
-                {% endfor %}
-            </p>
+            {% for error in form.type.errors %}
+                <div class="alert alert-danger mt-2" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
 
-            {% if form.type.data and form.type.data != '' %}
-            <p>
-                {{ form.textarea.label(class="form-label") }}<br>
-                {{ form.textarea(class="form-control", rows="5", placeholder="Опишите детали проблемы...") }}
-            </p>
+        {% if form.type.data and form.type.data != '' %}
+        <div class="w-75 mx-auto mb-4 text-start">
+            {{ form.textarea.label(class="form-label") }}
+            {{ form.textarea(class="form-control", rows="6", placeholder="Опишите детали проблемы...") }}
+        </div>
 
-            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-            {% endif %}
+        <div class="w-75 mx-auto mb-4 text-start">
+            {{ form.file.label(class="form-label") }}
+            {{ form.file(class="form-control", accept=".jpg,.png,.jpeg,.dng,.hevc") }}
+            <span></span>
+        </div>
 
-            {{message}}
-        </form>
-    </div>
+        <div class="row w-75 mx-auto gx-4 border border-secondary-subtle py-4 rounded mb-4">
+            <div class="col">
+                <div id="map" class="mx-auto d-block" style="width: 100%; max-width: 818px; height: 542px;"></div>
+            </div>
+        </div>
+
+        <div class="w-75 mx-auto text-start">
+            {{ form.submit(type="submit", class="btn btn-primary px-5") }}
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-3">{{ message }}</div>
+    </form>
+</div>
 {% endblock %}

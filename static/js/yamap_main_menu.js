@@ -55,13 +55,6 @@ initMap();
                     return;
                     }
                 const coords = event.coordinates;
-
-                const newMarker = new YMapMarker(
-                    { coordinates: coords, draggable: true },
-                    createMarkerElement()
-                );
-
-                map.addChild(newMarker);
             }
         });
 

@@ -16,7 +16,6 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
     appeal_text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     appeal_photo_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     process_level = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("stages.id"))
-    is_solved = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
     marker_id = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("markers.id"))
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     stated_department = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("departments.id"), nullable=True)
@@ -24,4 +23,4 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
 
     owner = orm.relationship("User", back_populates="tickets")
     marker_rel = orm.relationship("Marker", back_populates="ticket_mark_rel")
-    stage_rel = orm.relationship("Stage", back_populates="ticket_stage_rel")
+    stage_rel = orm.relationship("Stage")
