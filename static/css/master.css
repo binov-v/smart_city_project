@@ -7,6 +7,16 @@ body {
       #CDD8FF;
 }
 
+.ticket-item {
+    border-bottom: 1px solid var(--bs-tertiary-bg);
+    background-color: #FFFFFF;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    display: block;
+    padding: .5rem 1rem;
+    text-decoration: none
+}
+
 .card {
     background-color: #E0E9F9;
     }

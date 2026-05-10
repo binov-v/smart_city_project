@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
+<script src="https://api-maps.yandex.ru/v3/?apikey=9b29f72a-66c1-4c94-9052-8f3bfef5e7f6&lang=ru_RU"></script>
+<script src="{{ url_for('static', filename='js/yamap_ticket_new.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-xxl">
+    <div class="col-md-8 ticket-main-panel">
+        <div class="ticket-list">
+            {% for ticket in list_tickets %}
+            <a href="/tickets/{{ ticket.id }}" class="ticket-item mb-2">
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <div class="mb-1">
+                            <span class="text-primary fw-bold">Заявка #{{ ticket.id }}</span>
+                            <span class="text-muted"> — {{ ticket.created_date }}</span>
+                        </div>
+                        <div class="text-dark small">
+                            {{ ticket.appeal_text if ticket.appeal_text else "Без описания" }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        {% if ticket.process_level == 3 %}
+                        <span class="badge bg-secondary"> Закрыта </span>
+                        {% elif ticket.process_level == 2 %}
+                        <span class="badge bg-primary"> Выполняется </span>
+                        {% elif ticket.process_level == 1 %}
+                        <span class="badge bg-warning text-dark"> На модерации </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

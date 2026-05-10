@@ -1,3 +1,5 @@
+import requests
+
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user, login_required
@@ -9,6 +11,7 @@ from data.users import User
 from data.add_ticket import AddTicketForm
 from data.tickets import Ticket
 from data.markers import Marker
+from data import tickets_resource
 from data.departments import Department
 from data.stages import Stage
 from flask_restful import reqparse, abort, Api, Resource
@@ -22,6 +25,8 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = 'static/uploads/tickets'
 app = Flask(__name__)
 api = Api(app)
+api.add_resource(tickets_resource.TicketsListResource, '/api/v1/tickets')
+api.add_resource(tickets_resource.TicketResource, 'api/v1/tickets/<int:tick_id>')
 
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -95,37 +100,27 @@ def register():
 
 @app.route('/master', methods=['GET', 'POST'])
 def master_page():
-    session = db_session.create_session()
-    dep = Department(
-        title='transport',
-        chief=1
-    )
-    session.add(dep)
-    dep = Department(
-        title='improvement_and_eco',
-        chief=1
-    )
-    session.add(dep)
-    dep = Department(
-        title='communal',
-        chief=1
-    )
-    session.add(dep)
-    dep = Department(
-        title='safety',
-        chief=1
-    )
-    session.add(dep)
-    session.commit()
-
-
-    ('transport', 'Дороги и транспорт'),
-    ('improvement', 'Благоустройство и экология'),
-    ('communal', 'ЖКХ'),
-    ('safety', 'Безопасность и правопорядок')
     if current_user.is_authenticated:
         return render_template('master.html')
     return redirect('/')
+
+
+@app.route('/master/<int:tick_id>', methods=['GET', 'POST'])
+@login_required
+def list_user_ticket(tick_id):
+    response = requests.get(f'http://localhost:5000/api/v1/tickets/{tick_id}')
+    data = response.json()
+    user_ticket = data.get('ticket', [])
+    return render_template('ticket_info.html', list_tickets=user_ticket)
+
+
+@app.route('/master/tickets', methods=['GET', 'POST'])
+@login_required
+def list_user_ticket():
+    response = requests.get('http://localhost:5000/api/v1/tickets', params={'user_id': current_user.id})
+    data = response.json()
+    user_tickets = data.get('tickets', [])
+    return render_template('tickets.html', list_tickets=user_tickets)
 
 
 @app.route('/master/tickets/new', methods=['GET', 'POST'])
@@ -175,6 +170,7 @@ def new_ticket():
 
     return render_template('add_ticket.html', form=form)
 
+
 #
 #
 # @app.route("/departments")
@@ -189,6 +185,8 @@ def new_ticket():
 def logout():
     logout_user()
     return redirect('/')
+
+
 #
 #
 # @app.route('/addjob', methods=['GET', 'POST'])
