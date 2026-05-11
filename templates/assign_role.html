@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-6">
+            <div class="card p-4">
+                <div class="card-body">
+                    <div class="d-flex mb-4">
+                        <div>
+                            <span class="badge {% if user.user_role == 1 %}bg-warning{% elif user.user_role == 2 %}bg-primary{% elif user.user_role == 3 %}bg-secondary{% else %}bg-info{% endif %} mb-2">
+                                {% if user.user_role == 1 %}Админ{% elif user.user_role == 2 %}Глава департамента{% elif user.user_role == 3 %}Модератор{% else %}Пользователь{% endif %}
+                            </span>
+                            <h2 class="fw-bold mb-0">{{ user.surname }} {{ user.name }}</h2>
+                            <p class="text-muted">ID пользователя: #{{ user.id }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted">
+
+                    <div class="row g-4 mt-2">
+                        <div class="col-sm-6">
+                            <label class="text-muted small d-block">Электронная почта</label>
+                            <span class="fs-5">{{ user.email }}</span>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="text-muted small d-block">Возраст</label>
+                            <span class="fs-5">{{ user.age }}</span>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="text-muted small d-block">Роль</label>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    {% if user.user_role == 1 %}Модератор{% elif user.user_role == 2 %}Глава
+                                    департамента{% else %}Пользователь{% endif %}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item {% if user.user_role == 2 %}active{% endif %}">Глава
+                                        департамента</a></li>
+                                    <li><a class="dropdown-item {% if user.user_role == 1 %}active{% endif %}">Админ</a>
+                                    </li>
+                                    <li><a class="dropdown-item {% if not user.user_role%}active{% endif %}">Пользователь</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="text-muted small d-block">Адрес проживания</label>
+                            <span class="fs-5">{{ user.address }}</span>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="text-muted small d-block">Последнее изменение</label>
+                            <span class="text-muted">{{ user.modified_date }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

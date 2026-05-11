@@ -7,11 +7,13 @@ from flask_login import login_user, logout_user, login_required
 from data import db_session
 from data.login_form import LoginForm
 from data.register_form import RegisterForm
-from data.users import User
 from data.add_ticket import AddTicketForm
+from data.roles_assign_form import FindUserForm
 from data.tickets import Ticket
 from data.markers import Marker
-from data import tickets_resource
+from data.users import User
+from data import tickets_resource, markers_resource
+from data import users_resource
 from data.departments import Department
 from data.stages import Stage
 from flask_restful import reqparse, abort, Api, Resource
@@ -27,6 +29,8 @@ app = Flask(__name__)
 api = Api(app)
 api.add_resource(tickets_resource.TicketsListResource, '/api/v1/tickets')
 api.add_resource(tickets_resource.TicketResource, '/api/v1/tickets/<int:tick_id>')
+api.add_resource(markers_resource.MarkersListResource, '/api/v1/markers')
+api.add_resource(users_resource.UsersListResource, '/api/v1/users')
 
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -172,15 +176,25 @@ def new_ticket():
     return render_template('add_ticket.html', form=form)
 
 
-#
-#
-# @app.route("/departments")
-# def departments():
-#     db_sess = db_session.create_session()
-#     deps = db_sess.query(Department).all()
-#     return render_template('departments.html', deps=deps, title='Departments log')
-#
-#
+@app.route('/master/users', methods=['GET', 'POST'])
+def list_of_users():
+    if current_user.user_role == 1 or current_user.user_role == 3:
+        form = FindUserForm()
+        if form.validate_on_submit():
+            response = requests.get('http://localhost:5000/api/v1/users', params={'keyword': form.mail_or_surname.data})
+            data = response.json()
+            return render_template('users.html', form=form, users_list=data)
+        return render_template('users.html', form=form)
+
+
+@app.route('/master/users/<int:id>', methods=['GET', 'POST'])
+def assign_role(id):
+    if current_user.user_role == 1 or current_user.user_role == 3:
+        session = db_session.create_session()
+        user = session.query(User).filter(User.id == id).first()
+        return render_template('assign_role.html', user=user)
+    #добавить кнопку для сохранения изменения роли, и сделать, чтобы роль отображалсь внутри выпадающего списка
+
 @app.route('/logout')
 @login_required
 def logout():

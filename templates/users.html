@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-md mt-5">
+    <form action="" method="post" class="row g-3 justify-content-center align-items-end">
+        {{ form.hidden_tag() }}
+
+        <div class="col-12 col-md-6">
+            {{ form.mail_or_surname.label(class="form-label fw-bold") }}
+
+            <div class="input-group">
+                {{ form.mail_or_surname(class="form-control", placeholder="Введите email или фамилию...",
+                onchange="this.form.submit()") }}
+            </div>
+
+            {% for error in form.mail_or_surname.errors %}
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-12 col-md-auto">
+            {{ form.submit(type="submit", class="btn btn-primary px-4") }}
+        </div>
+
+        {% if users_list %}
+        <div class="container-xxl">
+            <div class="col-md-8 mx-auto ticket-main-panel">
+                <div class="ticket-list">
+                    {% for user in users_list %}
+                    <a href="/master/users/{{ user.id }}" class="ticket-item mb-2 d-block text-decoration-none">
+                        <div class="row align-items-center p-2">
+                            <div class="col-md-9">
+                                <div class="mb-1">
+                                    <span class="text-primary fw-bold">#{{ user.id }}</span>
+                                    <span class="text-muted small"> — {{ user.modified_date }}</span>
+                                </div>
+                                <div class="h5 mb-0 text-dark">
+                                    {{ user.surname }} {{ user.name }}
+                                </div>
+                                <div class="text-muted small">
+                                    <i class="bi bi-envelope"></i> {{ user.email }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 text-end">
+                                {% if user.user_role == 1 %}
+                                <span class="badge rounded-pill bg-warning"> Админ </span>
+                                {% elif user.user_role == 2 %}
+                                <span class="badge rounded-pill bg-primary"> Глава департамента </span>
+                                {% elif user.user_role == 3 %}
+                                <span class="badge rounded-pill bg-secondary text-dark"> Модератор </span>
+                                {% else %}
+                                <span class="badge rounded-pill bg-info text-white"> Пользователь </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if message %}
+        <div class="col-12">
+            <div class="text-center mt-2 text-muted">{{ message }}</div>
+        </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

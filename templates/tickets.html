@@ -16,7 +16,7 @@
                     <div class="col-md-9">
                         <div class="mb-1">
                             <span class="text-primary fw-bold">Заявка #{{ ticket.id }}</span>
-                            <span class="text-muted"> — {{ ticket.created_date }}</span>
+                            <span class="text-muted"> - {{ ticket.created_date }}</span>
                         </div>
                         <div class="text-dark small">
                             {{ ticket.appeal_text if ticket.appeal_text else "Без описания" }}
