@@ -14,10 +14,12 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     appeal_creator = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("users.id"))
     appeal_text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    appeal_answer_text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     appeal_photo_path = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     process_level = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("stages.id"))
     marker_id = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("markers.id"))
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    closed_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
     stated_department = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("departments.id"), nullable=True)
     dep_rel = orm.relationship("Department", back_populates="ticket_dep_rel")
 

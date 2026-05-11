@@ -1,0 +1,109 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    background:
+      radial-gradient(ellipse 80% 40% at 50% 0%, #FFFFFF 0%, transparent 100%),
+      radial-gradient(ellipse 120% 95% at 50% 30%, #899EEF 0%, transparent 90%),
+      #CDD8FF;
+}
+
+.navbar {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+.logo-color, .user-link-photo img {
+    max-height: 60px;
+    width: auto;
+    object-fit: contain;
+    }
+
+.user-link-photo img {
+    border-radius: 50%;
+    }
+
+.nav-link {
+    font-family: 'Open Sans', sans-serif;
+    weight: 400;
+    }
+
+.ticket-item {
+    border-bottom: 1px solid var(--bs-tertiary-bg);
+    background-color: #FFFFFF;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    display: block;
+    padding: .5rem 1rem;
+    text-decoration: none
+}
+
+.sticky-info-panel {
+    background-color: transparent !important;
+}
+
+
+.ticket-main-panel {
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 8px 0 0 8px;
+}
+
+.ticket-comment {
+    display: flex;
+    margin-bottom: 25px;
+}
+
+.comment-author {
+    flex: 0 0 60px;
+    text-align: center;
+    margin-right: 15px;
+}
+
+.comment-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin: 0 auto 5px;
+    border: 1px solid #dee2e6;
+}
+
+.comment-container {
+    flex-grow: 1;
+}
+
+.comment-body {
+    padding: 15px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.comment-text p {
+    margin-bottom: 0;
+}
+
+.comment-username {
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 5px;
+}
+
+.name_surname, .name {
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.ticket-info-panel {
+    background-color: #f0f4f8 !important;
+    padding: 1.5rem !important;
+    min-height: 100%;
+}
+
+.ticket-card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}

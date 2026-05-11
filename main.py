@@ -26,7 +26,7 @@ UPLOAD_FOLDER = 'static/uploads/tickets'
 app = Flask(__name__)
 api = Api(app)
 api.add_resource(tickets_resource.TicketsListResource, '/api/v1/tickets')
-api.add_resource(tickets_resource.TicketResource, 'api/v1/tickets/<int:tick_id>')
+api.add_resource(tickets_resource.TicketResource, '/api/v1/tickets/<int:tick_id>')
 
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -105,17 +105,18 @@ def master_page():
     return redirect('/')
 
 
-@app.route('/master/<int:tick_id>', methods=['GET', 'POST'])
-@login_required
-def list_user_ticket(tick_id):
+@app.route('/tickets/<int:tick_id>', methods=['GET', 'POST'])
+def one_ticket(tick_id):
     response = requests.get(f'http://localhost:5000/api/v1/tickets/{tick_id}')
-    data = response.json()
-    user_ticket = data.get('ticket', [])
-    return render_template('ticket_info.html', list_tickets=user_ticket)
+    if response.status_code == 200:
+        data = response.json()
+        user_ticket = data.get('ticket')
+    else:
+        user_ticket = None
+    return render_template('ticket_info.html', user_ticket=user_ticket)
 
 
 @app.route('/master/tickets', methods=['GET', 'POST'])
-@login_required
 def list_user_ticket():
     response = requests.get('http://localhost:5000/api/v1/tickets', params={'user_id': current_user.id})
     data = response.json()

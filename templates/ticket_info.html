@@ -1,13 +1,97 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/new_ticket.css') }}">
 <script src="https://api-maps.yandex.ru/v3/?apikey=9b29f72a-66c1-4c94-9052-8f3bfef5e7f6&lang=ru_RU"></script>
 <script src="{{ url_for('static', filename='js/yamap_ticket_new.js') }}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="container-xxl">
-
+    <div class="ticket-card" data-controller="ticket-view">
+        <div class="row">
+            <div class="col-md-8 ticket-main-panel">
+                <div class="ticket-comments" id="ticket-comments">
+                    <div class="ticket-comment">
+                        <div class="comment-author">
+                            <div class="comment-avatar"
+                                 style="background-image: url('{{ url_for('static', filename='images/user_photo.png') }}')"></div>
+                            <span class="name_surname">{{ current_user.name }} {{ current_user.surname }}</span>
+                        </div>
+                        <div class="comment-container">
+                            <div class="bg-light-subtle comment-body">
+                                <div class="comment-username d-none d-sm-block">
+                                    <span class="name_surname">{{ current_user.name }} {{ current_user.surname }}</span>
+                                    <span>{{ user_ticket.created_date }}</span>
+                                </div>
+                                <div class="comment-text">
+                                    <p>
+                                        {{ user_ticket.appeal_text }}
+                                    </p>
+                                </div>
+                            </div>
+                            <img src="{{ url_for('static', filename=user_ticket.appeal_photo_path) }}" class="img-fluid" alt="Фото обращения">
+                        </div>
+                    </div>
+                    {% if (user_ticket.process_level == 3) or (user_ticket.process_level == 2)%}
+                    <div class="ticket-comment" data-controller="photoswipe">
+                        <div class="comment-author">
+                            <div class="comment-avatar"
+                                 style="background-image: url('{{ url_for('static', filename='images/worker_photo.png') }}')"></div>
+                            <span class="d-sm-none">
+                                <span class="name">{{ user_ticket.dep_rel.chief_rel.name }}</span>
+                                <span>{{ user_ticket.closed_date }}</span>
+                            </span>
+                        </div>
+                        <div class="comment-container">
+                            <div class="bg-primary-subtle comment-body">
+                                <div class="comment-username d-none d-sm-block">
+                                    <span class="name">{{ user_ticket.dep_rel.chief_rel.name }}</span>
+                                    <span>{{ user_ticket.created_date }}</span>
+                                </div>
+                                <div class="comment-text">
+                                    <p>
+                                        {{ user_ticket.appeal_answer_text }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 ticket-info-panel">
+                <div class="sticky-info-panel">
+                    <div class="row mb-3">
+                        <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Статус</div>
+                        <div class="col-xl-8 col-sm-8 col-md-12">
+                            {% if user_ticket.process_level == 3 %}
+                            <span class="badge bg-secondary"> Закрыта </span>
+                            {% elif user_ticket.process_level == 2 %}
+                            <span class="badge bg-primary"> Выполняется </span>
+                            {% elif user_ticket.process_level == 1 %}
+                            <span class="badge bg-warning text-dark"> На модерации </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Создана</div>
+                        <div class="col-xl-8 col-sm-8 col-md-12">{{ user_ticket.created_date }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Ответственный</div>
+                        <div class="col-xl-8 col-sm-8 col-md-12">
+                            {% if user_ticket.dep_rel and user_ticket.dep_rel.chief_rel %}
+                            {{ user_ticket.dep_rel.chief_rel.name }}
+                            {% else %}
+                            <span class="text-muted">Не назначен</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr class="mb-2 mt-2">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

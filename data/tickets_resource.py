@@ -25,15 +25,17 @@ class TicketsListResource(Resource):
 class TicketResource(Resource):
     def get(self, tick_id):
         session = db_session.create_session()
-
         ticket = session.query(Ticket).filter(Ticket.id == tick_id).first()
 
+        if not ticket:
+            return jsonify({'message': 'Ticket not found'}), 404
+
         return jsonify({
-            'ticket': [
-                item.to_dict(only=('id', 'appeal_creator', 'appeal_text', 'appeal_photo_path',
-                                   'process_level', 'marker_id', 'created_date', 'stated_department'))
-                for item in ticket
-            ]
+            'ticket': ticket.to_dict(only=(
+                'id', 'appeal_creator', 'appeal_text', 'appeal_photo_path',
+                'process_level', 'marker_id', 'created_date', 'stated_department',
+                'dep_rel.chief_rel.name'
+            ))
         })
 
 

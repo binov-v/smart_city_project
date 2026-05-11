@@ -17,6 +17,11 @@ body {
     text-decoration: none
 }
 
+.ticket-info-panel {
+    background-color: #FFFFFF;
+    padding: 1.5rem 1.5rem .5rem;
+}
+
 .card {
     background-color: #E0E9F9;
     }

@@ -1,0 +1,23 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    background:
+      radial-gradient(ellipse 80% 40% at 50% 0%, #FFFFFF 0%, transparent 100%),
+      radial-gradient(ellipse 120% 95% at 50% 30%, #899EEF 0%, transparent 90%),
+      #CDD8FF;
+}
+
+.ticket-item {
+    border-bottom: 1px solid var(--bs-tertiary-bg);
+    background-color: #FFFFFF;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    display: block;
+    padding: .5rem 1rem;
+    text-decoration: none
+}
+
+.ticket-info-panel {
+    background-color: #FFFFFF;
+    padding: 1.5rem 1.5rem .5rem;
+}
