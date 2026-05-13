@@ -80,10 +80,20 @@ body {
 }
 
 .register-btn {
-    background: rgba(255, 255, 255, 0.25);
+    width: 78%;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     font-weight: 600;
+    font-family: inherit;
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: #fff;
+    text-decoration: none;
 }
-
 .login-btn:hover {
     background: #3c94f0;
     transform: translateY(-2px);

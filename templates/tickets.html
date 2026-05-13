@@ -11,20 +11,25 @@
     <div class="col-md-8 ticket-main-panel">
         <div class="ticket-list">
             {% for ticket in list_tickets %}
-            <a href="/tickets/{{ ticket.id }}" class="ticket-item mb-2">
+            <a href="{% if is_it_for_moder %}/tickets/moderation/{{ ticket.id }}{% else %}/tickets/{{ ticket.id }}{% endif %}"
+               class="ticket-item mb-2">
+
                 <div class="row align-items-center">
                     <div class="col-md-9">
                         <div class="mb-1">
                             <span class="text-primary fw-bold">Заявка #{{ ticket.id }}</span>
                             <span class="text-muted"> - {{ ticket.created_date }}</span>
                         </div>
+
                         <div class="text-dark small">
                             {{ ticket.appeal_text if ticket.appeal_text else "Без описания" }}
                         </div>
                     </div>
 
                     <div class="col-md-3 text-end">
-                        {% if ticket.process_level == 3 %}
+                        {% if ticket.process_level == 4 %}
+                        <span class="badge bg-danger"> Отклонена </span>
+                        {% elif ticket.process_level == 3 %}
                         <span class="badge bg-secondary"> Закрыта </span>
                         {% elif ticket.process_level == 2 %}
                         <span class="badge bg-primary"> Выполняется </span>

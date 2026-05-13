@@ -3,6 +3,7 @@ from wtforms import SubmitField, SelectField, TextAreaField, FileField, HiddenFi
 from flask_wtf.file import FileAllowed, FileRequired
 from wtforms.validators import DataRequired
 
+
 class AddTicketForm(FlaskForm):
     type = SelectField(
         'Выберите категорию обращения',

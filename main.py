@@ -1,4 +1,5 @@
 import requests
+import datetime
 
 from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, current_user
@@ -45,21 +46,6 @@ def load_user(user_id):
     return db_sess.get(User, user_id)
 
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         user = db_sess.query(User).filter(User.email == form.email.data).first()
-#         if user and user.check_password(form.password.data):
-#             login_user(user, remember=form.remember_me.data)
-#             return redirect("/")
-#         return render_template('login.html',
-#                                message="Неправильный логин или пароль",
-#                                form=form)
-#     return render_template('login.html', title='Авторизация', form=form)
-#
-#
 @app.route("/", methods=['GET', 'POST'])
 def index():
     if current_user.is_authenticated:
@@ -103,13 +89,13 @@ def register():
 
 
 @app.route('/master', methods=['GET', 'POST'])
+@login_required
 def master_page():
-    if current_user.is_authenticated:
-        return render_template('master.html')
-    return redirect('/')
+    return render_template('master.html')
 
 
 @app.route('/tickets/<int:tick_id>', methods=['GET', 'POST'])
+@login_required
 def one_ticket(tick_id):
     response = requests.get(f'http://localhost:5000/api/v1/tickets/{tick_id}')
     if response.status_code == 200:
@@ -117,18 +103,19 @@ def one_ticket(tick_id):
         user_ticket = data.get('ticket')
     else:
         user_ticket = None
-    return render_template('ticket_info.html', user_ticket=user_ticket)
+    return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=False)
 
 
-@app.route('/master/tickets', methods=['GET', 'POST'])
+@app.route('/tickets', methods=['GET', 'POST'])
+@login_required
 def list_user_ticket():
     response = requests.get('http://localhost:5000/api/v1/tickets', params={'user_id': current_user.id})
     data = response.json()
     user_tickets = data.get('tickets', [])
-    return render_template('tickets.html', list_tickets=user_tickets)
+    return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=False)
 
 
-@app.route('/master/tickets/new', methods=['GET', 'POST'])
+@app.route('/tickets/new', methods=['GET', 'POST'])
 def new_ticket():
     form = AddTicketForm()
 
@@ -160,23 +147,26 @@ def new_ticket():
             session.add(marker)
             session.commit()
 
+            dep = {'transport': 1, 'improvement_and_eco': 2, 'communal': 3, 'safety': 4}
             ticket = Ticket(
                 appeal_creator=current_user.id,
                 appeal_text=form.textarea.data,
                 appeal_photo_path=relative_path,
                 process_level=1,
                 marker_id=marker.id,
+                stated_department=dep[form.type.data]
             )
             file.save(file_path)
             session.add(ticket)
             session.commit()
 
-            return redirect('/master/tickets')
+            return redirect('/tickets')
 
     return render_template('add_ticket.html', form=form)
 
 
-@app.route('/master/users', methods=['GET', 'POST'])
+@app.route('/users', methods=['GET', 'POST'])
+@login_required
 def list_of_users():
     if current_user.user_role == 1 or current_user.user_role == 3:
         form = FindUserForm()
@@ -187,19 +177,55 @@ def list_of_users():
         return render_template('users.html', form=form)
 
 
-@app.route('/master/users/<int:id>', methods=['GET', 'POST'])
+@app.route('/users/<int:id>', methods=['GET', 'POST'])
+@login_required
 def assign_role(id):
-    if current_user.user_role == 1 or current_user.user_role == 3:
+    if current_user.user_role == 1:
         session = db_session.create_session()
         user = session.query(User).filter(User.id == id).first()
 
         if request.method == 'POST':
             new_role = request.form.get('user_role')
             user.user_role = int(new_role)
+            user.modified_date = datetime.datetime.now
             session.commit()
-            return redirect(f'/master/users')
+            return redirect(f'/users')
 
         return render_template('assign_role.html', user=user)
+
+
+@app.route('/tickets/moderation')
+@login_required
+def tickets_list_moderation():
+    response = requests.get('http://localhost:5000/api/v1/tickets', params={'moderation_stage': True})
+    data = response.json()
+    user_tickets = data.get('tickets', [])
+    return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=True)
+
+
+@app.route('/tickets/moderation/<int:tick_id>', methods=['GET', 'POST'])
+@login_required
+def ticket_moderation(tick_id):
+    response = requests.get(f'http://localhost:5000/api/v1/tickets/{tick_id}')
+    if response.status_code == 200:
+        data = response.json()
+        user_ticket = data.get('ticket')
+    else:
+        user_ticket = None
+
+    if request.method == 'POST':
+        session = db_session.create_session()
+        ticket = session.query(Ticket).filter(Ticket.id == tick_id).first()
+        button_value = request.form.get('action')
+        if button_value == 'rejectBtn':
+            ticket.process_level = 4
+        elif button_value == 'confirmBtn':
+            ticket.process_level = 2
+            ticket.stated_department = request.form.get('department_name')
+        session.commit()
+        return redirect('/tickets/moderation')
+
+    return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=True)
 
 
 @app.route('/logout')

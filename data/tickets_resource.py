@@ -4,7 +4,8 @@ from data.tickets import Ticket
 from flask import jsonify
 
 parser = reqparse.RequestParser()
-parser.add_argument('user_id', required=True, type=int, location=['args'])
+parser.add_argument('user_id', required=False, type=int, location=['args'])
+parser.add_argument('moderation_stage', type=bool, location=['args'])
 
 
 class TicketsListResource(Resource):
@@ -12,15 +13,27 @@ class TicketsListResource(Resource):
         args = parser.parse_args()
         session = db_session.create_session()
 
-        tickets = session.query(Ticket).filter(Ticket.appeal_creator == args['user_id']).all()
+        if args.get('user_id'):
+            tickets = session.query(Ticket).filter(Ticket.appeal_creator == args['user_id']).all()
 
-        return jsonify({
-            'tickets': [
-                item.to_dict(only=('id', 'appeal_creator', 'appeal_text', 'appeal_photo_path',
-                                   'process_level', 'marker_id', 'created_date', 'stated_department'))
-                for item in tickets
-            ]
-        })
+            return jsonify({
+                'tickets': [
+                    item.to_dict(only=('id', 'appeal_creator', 'appeal_text', 'appeal_photo_path',
+                                       'process_level', 'marker_id', 'created_date', 'stated_department'))
+                    for item in tickets
+                ]
+            })
+        elif args.get('moderation_stage'):
+            tickets = session.query(Ticket).filter(Ticket.process_level == 1).all()
+
+            return jsonify({
+                'tickets': [
+                    item.to_dict(only=('id', 'appeal_creator', 'appeal_text', 'appeal_photo_path',
+                                       'process_level', 'marker_id', 'created_date', 'stated_department'))
+                    for item in tickets
+                ]
+            })
+
 
 class TicketResource(Resource):
     def get(self, tick_id):
@@ -37,7 +50,6 @@ class TicketResource(Resource):
                 'dep_rel.chief_rel.name'
             ))
         })
-
 
 
 def abort_if_news_not_found(user_id):
