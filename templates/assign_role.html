@@ -33,24 +33,47 @@
                             <span class="fs-5">{{ user.age }}</span>
                         </div>
 
-                        <div class="col-sm-6">
-                            <label class="text-muted small d-block">Роль</label>
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    {% if user.user_role == 1 %}Модератор{% elif user.user_role == 2 %}Глава
-                                    департамента{% else %}Пользователь{% endif %}
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item {% if user.user_role == 2 %}active{% endif %}">Глава
-                                        департамента</a></li>
-                                    <li><a class="dropdown-item {% if user.user_role == 1 %}active{% endif %}">Админ</a>
-                                    </li>
-                                    <li><a class="dropdown-item {% if not user.user_role%}active{% endif %}">Пользователь</a>
-                                    </li>
-                                </ul>
+                        <form method="POST">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="user_role"
+                                       id="roleAdmin" value="1"
+                                       {% if user.user_role== 1 %}checked{% endif %}>
+                                <label class="form-check-label">
+                                    Админ
+                                </label>
                             </div>
-                        </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="user_role"
+                                       id="roleModerator" value="3"
+                                       {% if user.user_role== 3 %}checked{% endif %}>
+                                <label class="form-check-label">
+                                    Модератор
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="user_role"
+                                       id="roleHead" value="2"
+                                       {% if user.user_role== 2 %}checked{% endif %}>
+                                <label class="form-check-label">
+                                    Глава департамента
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="user_role"
+                                       id="roleUser" value="0"
+                                       {% if user.user_role== 0 %}checked{% endif %}>
+                                <label class="form-check-label">
+                                    Пользователь
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary mt-3">
+                                Сохранить
+                            </button>
+                        </form>
 
                         <div class="col-12">
                             <label class="text-muted small d-block">Адрес проживания</label>

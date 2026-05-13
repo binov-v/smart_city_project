@@ -192,8 +192,15 @@ def assign_role(id):
     if current_user.user_role == 1 or current_user.user_role == 3:
         session = db_session.create_session()
         user = session.query(User).filter(User.id == id).first()
+
+        if request.method == 'POST':
+            new_role = request.form.get('user_role')
+            user.user_role = int(new_role)
+            session.commit()
+            return redirect(f'/master/users')
+
         return render_template('assign_role.html', user=user)
-    #добавить кнопку для сохранения изменения роли, и сделать, чтобы роль отображалсь внутри выпадающего списка
+
 
 @app.route('/logout')
 @login_required
