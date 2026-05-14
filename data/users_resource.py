@@ -14,25 +14,31 @@ class UsersListResource(Resource):
         keyword = args['keyword']
 
         session = db_session.create_session()
+        try:
 
-        users = session.query(User).filter(
-            or_(
-                User.surname.ilike(f'%{keyword}%'),
-                User.email.ilike(f'%{keyword}%')
+            users = session.query(User).filter(
+                or_(
+                    User.surname.ilike(f'%{keyword}%'),
+                    User.email.ilike(f'%{keyword}%')
+                )
+            ).all()
+
+            return jsonify(
+                [
+                    item.to_dict(only=('id', 'surname', 'name', 'age', 'address',
+                                       'email', 'modified_date', 'user_role', 'department'))
+                    for item in users
+                ]
             )
-        ).all()
-
-        return jsonify(
-            [
-                item.to_dict(only=('id', 'surname', 'name', 'age', 'address',
-                                   'email', 'modified_date', 'user_role', 'department'))
-                for item in users
-            ]
-        )
+        finally:
+            session.close()
 
 
 def abort_if_news_not_found(user_id):
     session = db_session.create_session()
-    users = session.query(User).get(user_id)
-    if not users:
-        abort(404, message=f"Users {user_id} not found")
+    try:
+        users = session.query(User).get(user_id)
+        if not users:
+            abort(404, message=f"Users {user_id} not found")
+    finally:
+        session.close()

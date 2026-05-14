@@ -42,8 +42,11 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.get(User, user_id)
+    session = db_session.create_session()
+    try:
+        return session.get(User, int(user_id))
+    finally:
+        session.close()
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -54,11 +57,14 @@ def index():
         form = LoginForm()
         if form.validate_on_submit():
             session = db_session.create_session()
-            user = session.query(User).filter(User.email == form.email.data).first()
-            if user and user.check_password(form.password.data):
-                login_user(user, remember=True)
-                return redirect('/master')
-            return render_template('index.html', message="Неправильный логин или пароль", form=form)
+            try:
+                user = session.query(User).filter(User.email == form.email.data).first()
+                if user and user.check_password(form.password.data):
+                    login_user(user, remember=True)
+                    return redirect('/master')
+                return render_template('index.html', message="Неправильный логин или пароль", form=form)
+            finally:
+                session.close()
 
     return render_template('index.html', title='Авторизация', form=form)
 
@@ -70,21 +76,24 @@ def register():
         if form.password.data != form.password_again.data:
             return render_template('register.html', title='Регистрация', form=form,
                                    message="Пароли не совпадают")
-        db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.email == form.email.data).first():
-            return render_template('register.html', title='Регистрация', form=form,
-                                   message="Такой пользователь уже есть")
-        user = User(
-            email=form.email.data,
-            name=form.name.data,
-            surname=form.surname.data,
-            age=form.age.data,
-            address=form.address.data
-        )
-        user.set_password(form.password.data)
-        db_sess.add(user)
-        db_sess.commit()
-        return redirect('/')
+        session = db_session.create_session()
+        try:
+            if session.query(User).filter(User.email == form.email.data).first():
+                return render_template('register.html', title='Регистрация', form=form,
+                                       message="Такой пользователь уже есть")
+            user = User(
+                email=form.email.data,
+                name=form.name.data,
+                surname=form.surname.data,
+                age=form.age.data,
+                address=form.address.data
+            )
+            user.set_password(form.password.data)
+            session.add(user)
+            session.commit()
+            return redirect('/')
+        finally:
+            session.close()
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -141,26 +150,29 @@ def new_ticket():
 
             coodinates_list = json.loads(coodinates_str)
             session = db_session.create_session()
+            try:
 
-            marker = Marker(lat=str(coodinates_list[0]),
-                            lon=str(coodinates_list[1]))
-            session.add(marker)
-            session.commit()
+                marker = Marker(lat=str(coodinates_list[0]),
+                                lon=str(coodinates_list[1]))
+                session.add(marker)
+                session.commit()
 
-            dep = {'transport': 1, 'improvement_and_eco': 2, 'communal': 3, 'safety': 4}
-            ticket = Ticket(
-                appeal_creator=current_user.id,
-                appeal_text=form.textarea.data,
-                appeal_photo_path=relative_path,
-                process_level=1,
-                marker_id=marker.id,
-                stated_department=dep[form.type.data]
-            )
-            file.save(file_path)
-            session.add(ticket)
-            session.commit()
+                dep = {'transport': 1, 'improvement_and_eco': 2, 'communal': 3, 'safety': 4}
+                ticket = Ticket(
+                    appeal_creator=current_user.id,
+                    appeal_text=form.textarea.data,
+                    appeal_photo_path=relative_path,
+                    process_level=1,
+                    marker_id=marker.id,
+                    stated_department=dep[form.type.data]
+                )
+                file.save(file_path)
+                session.add(ticket)
+                session.commit()
 
-            return redirect('/tickets')
+                return redirect('/tickets')
+            finally:
+                session.close()
 
     return render_template('add_ticket.html', form=form)
 
@@ -182,14 +194,17 @@ def list_of_users():
 def assign_role(id):
     if current_user.user_role == 1:
         session = db_session.create_session()
-        user = session.query(User).filter(User.id == id).first()
+        try:
+            user = session.query(User).filter(User.id == id).first()
 
-        if request.method == 'POST':
-            new_role = request.form.get('user_role')
-            user.user_role = int(new_role)
-            user.modified_date = datetime.datetime.now
-            session.commit()
-            return redirect(f'/users')
+            if request.method == 'POST':
+                new_role = request.form.get('user_role')
+                user.user_role = int(new_role)
+                user.modified_date = datetime.datetime.now
+                session.commit()
+                return redirect(f'/users')
+        finally:
+            session.close()
 
         return render_template('assign_role.html', user=user)
 
@@ -215,15 +230,18 @@ def ticket_moderation(tick_id):
 
     if request.method == 'POST':
         session = db_session.create_session()
-        ticket = session.query(Ticket).filter(Ticket.id == tick_id).first()
-        button_value = request.form.get('action')
-        if button_value == 'rejectBtn':
-            ticket.process_level = 4
-        elif button_value == 'confirmBtn':
-            ticket.process_level = 2
-            ticket.stated_department = request.form.get('department_name')
-        session.commit()
-        return redirect('/tickets/moderation')
+        try:
+            ticket = session.query(Ticket).filter(Ticket.id == tick_id).first()
+            button_value = request.form.get('action')
+            if button_value == 'rejectBtn':
+                ticket.process_level = 4
+            elif button_value == 'confirmBtn':
+                ticket.process_level = 2
+                ticket.stated_department = request.form.get('department_name')
+            session.commit()
+            return redirect('/tickets/moderation')
+        finally:
+            session.close()
 
     return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=True)
 
@@ -383,7 +401,8 @@ def logout():
 
 def main():
     db_session.global_init("db/smart_city.db")
-    app.run(host='localhost', port=5000)
+    # app.run(host='localhost', port=5000)
+    serve(app, host='localhost', port=5000)
 
 
 if __name__ == '__main__':
