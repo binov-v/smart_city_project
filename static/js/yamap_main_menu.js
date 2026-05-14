@@ -34,6 +34,11 @@ async function initMap() {
         markerElement.appendChild(imgDiv);
 
         markerElement.onclick = () => {
+            const card = document.querySelector('.city-card');
+
+            if (card) {
+                card.classList.remove('is-empty');
+            }
             document.getElementById('title-for-card').innerText = ticket.title;
             document.getElementById('text-for-card').innerText = ticket.description;
 

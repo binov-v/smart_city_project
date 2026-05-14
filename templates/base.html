@@ -12,6 +12,22 @@
           crossorigin="anonymous">
     <title>{{title}}</title>
     {% block scripts %}{% endblock %}
+    <style>
+        .dropdown-menu {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px; /* Настройте под свой дизайн */
+        }
+
+        /* (Опционально) Если хотите убрать отступы вокруг разделителя */
+        .dropdown-divider {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 <header id="header">

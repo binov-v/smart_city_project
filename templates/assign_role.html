@@ -33,46 +33,32 @@
                             <span class="fs-5">{{ user.age }}</span>
                         </div>
 
-                        <form method="POST">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="user_role"
-                                       id="roleAdmin" value="1"
-                                       {% if user.user_role== 1 %}checked{% endif %}>
-                                <label class="form-check-label">
-                                    Админ
-                                </label>
-                            </div>
+                        <form method="POST" action="">
+                            {{ form.hidden_tag() }}
+                            <div class="col-12 mt-3">
+                                <label class="text-muted small d-block mb-2">{{ form.role_field.label }}</label>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="user_role"
-                                       id="roleModerator" value="3"
-                                       {% if user.user_role== 3 %}checked{% endif %}>
-                                <label class="form-check-label">
-                                    Модератор
-                                </label>
-                            </div>
+                                <div class="btn-group-vertical w-100" role="group">
+                                    {% for subfield in form.role_field %}
+                                    <div class="form-check border rounded p-2 mb-2">
+                                        {{ subfield(class="form-check-input ms-0 me-2",
+                                        onchange="HTMLFormElement.prototype.submit.call(this.form)") }}
+                                        {{ subfield.label(class="form-check-label") }}
+                                    </div>
+                                    {% endfor %}
+                                </div>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="user_role"
-                                       id="roleHead" value="2"
-                                       {% if user.user_role== 2 %}checked{% endif %}>
-                                <label class="form-check-label">
-                                    Глава департамента
-                                </label>
                             </div>
+                            {% if form.role_field.data == '2' %}
+                            <div class="col-12 mt-3">
+                                {{ form.type.label(class="text-muted small d-block mb-2") }}
+                                {{ form.type(class="form-select") }}
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="user_role"
-                                       id="roleUser" value="0"
-                                       {% if not user.user_role %}checked{% endif %}>
-                                <label class="form-check-label">
-                                    Пользователь
-                                </label>
                             </div>
-
-                            <button type="submit" class="btn btn-primary mt-3">
-                                Сохранить
-                            </button>
+                            {% endif %}
+                            <div class="col-12 mt-3">
+                                {{ form.save_button(class="btn btn-primary") }}
+                            </div>
                         </form>
 
                         <div class="col-12">

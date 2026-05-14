@@ -5,36 +5,26 @@ body {
       radial-gradient(ellipse 80% 40% at 50% 0%, #FFFFFF 0%, transparent 100%),
       radial-gradient(ellipse 120% 95% at 50% 30%, #899EEF 0%, transparent 90%),
       #CDD8FF;
+}
+
+.ticket-item {
+    border-bottom: 1px solid #f8f9fa;
+    background-color: #FFFFFF;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    display: block;
+    padding: .5rem 1rem;
+    text-decoration: none
+}
+
+.ticket-info-panel {
+    background-color: #FFFFFF;
+    padding: 1.5rem 1.5rem .5rem;
+}
+
+.card {
+    background-color: #E0E9F9;
     }
-
-
-.city-card {
-    height: 542px;
-    display: flex;
-    flex-direction: column;
-}
-
-.city-card-img {
-    height: 250px;
-    object-fit: cover;
-}
-
-
-.is-empty .city-card-body {
-    display: none;
-}
-
-.is-empty .city-card-img {
-    height: 100%;
-}
-
-#text-for-card {
-    overflow-y: auto;
-    max-height: 220px;
-    padding-right: 10px;
-}
-
-
 
 .navbar {
     background-color: transparent !important;
@@ -77,23 +67,6 @@ body {
     color: #525576;
     }
 
-
-.custom-marker {
-        position: relative;
-        width: 43px;
-        height: 65px;
-        cursor: pointer;
-        transform: translate(-50%, -100%);
-    }
-
-.marker-image {
-        width: 100%;
-        height: 100%;
-    }
-
-.marker-image:hover {
-        transform: scale(1.1);
-    }
 
 .dropdown-item:hover {
       background-color: #f8f9fa;

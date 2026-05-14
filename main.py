@@ -9,6 +9,7 @@ from data import db_session
 from data.login_form import LoginForm
 from data.register_form import RegisterForm
 from data.add_ticket import AddTicketForm
+from data.chief_role_form import SelectRoleForm
 from data.roles_assign_form import FindUserForm
 from data.tickets import Ticket
 from data.markers import Marker
@@ -125,6 +126,7 @@ def list_user_ticket():
 
 
 @app.route('/tickets/new', methods=['GET', 'POST'])
+@login_required
 def new_ticket():
     form = AddTicketForm()
 
@@ -194,19 +196,35 @@ def list_of_users():
 def assign_role(id):
     if current_user.user_role == 1:
         session = db_session.create_session()
+        user = session.query(User).filter(User.id == id).first()
         try:
-            user = session.query(User).filter(User.id == id).first()
+            form = SelectRoleForm()
+            if request.method == 'GET':
+                form.role_field.data = str(user.user_role) if user.user_role else '4'
 
-            if request.method == 'POST':
-                new_role = request.form.get('user_role')
-                user.user_role = int(new_role)
-                user.modified_date = datetime.datetime.now
-                session.commit()
-                return redirect(f'/users')
+            if form.validate_on_submit():
+                dept = None
+                if form.save_button.data:
+                    if form.role_field.data == '2':
+                        dept = session.query(Department).filter(Department.title == form.type.data).first()
+                        if dept:
+                            past_chief = session.query(User).filter(User.id == dept.chief).first()
+                            if past_chief:
+                                past_chief.department = None
+                                if past_chief.user_role != 1:
+                                    past_chief.user_role = None
+                                    past_chief.modified_date = datetime.datetime.now()
+
+                            dept.chief = user.id
+
+                    user.user_role = int(form.role_field.data)
+                    user.department = dept.chief_rel.id
+                    user.modified_date = datetime.datetime.now()
+                    session.commit()
+                    return redirect('/users')
+            return render_template('assign_role.html', user=user, form=form)
         finally:
             session.close()
-
-        return render_template('assign_role.html', user=user)
 
 
 @app.route('/tickets/moderation')
@@ -218,6 +236,10 @@ def tickets_list_moderation():
     return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=True)
 
 
+# !!!!!!!!!Если делаем пользователя главой департамента, то надо указать, главой какого он стал
+# !
+# !
+# !
 @app.route('/tickets/moderation/<int:tick_id>', methods=['GET', 'POST'])
 @login_required
 def ticket_moderation(tick_id):
@@ -251,152 +273,6 @@ def ticket_moderation(tick_id):
 def logout():
     logout_user()
     return redirect('/')
-
-
-#
-#
-# @app.route('/addjob', methods=['GET', 'POST'])
-# def addjob():
-#     form = AddJobForm()
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         job = Jobs(
-#             job=form.job.data,
-#             team_leader=form.team_leader.data,
-#             work_size=form.work_size.data,
-#             collaborators=form.collaborators.data,
-#             is_finished=form.is_finished.data
-#         )
-#         category = db_sess.query(Category).get(form.category.data)
-#         if category:
-#             job.categories.append(category)
-#         else:
-#             pass
-#
-#         db_sess.add(job)
-#         db_sess.commit()
-#         return redirect('/')
-#
-#     return render_template('addjob.html', title='Adding a job', form=form)
-#
-#
-# @app.route('/adddep', methods=['GET', 'POST'])
-# def add_dep():
-#     add_form = AddDepForm()
-#     if add_form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         deps = Department(
-#             title=add_form.title.data,
-#             chief=add_form.chief.data,
-#             members=add_form.members.data,
-#             email=add_form.email.data
-#         )
-#         db_sess.add(deps)
-#         db_sess.commit()
-#         return redirect('/departments')
-#     return render_template('adddep.html', title='Adding a department', form=add_form)
-#
-#
-# @app.route('/edit_job/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_job(id):
-#     form = AddJobForm()
-#     db_sess = db_session.create_session()
-#     job = db_sess.query(Jobs).filter(Jobs.id == id).first()
-#
-#     if not job:
-#         abort(404)
-#     if job.team_leader != current_user.id and current_user.id != 1:
-#         abort(403)
-#
-#     if request.method == "GET":
-#         form.job.data = job.job
-#         form.team_leader.data = job.team_leader
-#         form.work_size.data = job.work_size
-#         form.collaborators.data = job.collaborators
-#         form.is_finished.data = job.is_finished
-#
-#         if job.categories:
-#             form.category.data = job.categories[0].id
-#
-#     if form.validate_on_submit():
-#         job.job = form.job.data
-#         job.team_leader = form.team_leader.data
-#         job.work_size = form.work_size.data
-#         job.collaborators = form.collaborators.data
-#         job.is_finished = form.is_finished.data
-#
-#         category = db_sess.query(Category).get(form.category.data)
-#
-#         if category:
-#             job.categories = [category]
-#         else:
-#             job.categories = []
-#         db_sess.commit()
-#         return redirect('/')
-#
-#     return render_template('addjob.html', title='Редактирование работы', form=form)
-#
-#
-# @app.route('/edit_dep/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_dep(id):
-#     form = AddDepForm()
-#     db_sess = db_session.create_session()
-#     dep = db_sess.query(Department).filter(Department.id == id).first()
-#
-#     if not dep:
-#         abort(404)
-#     if dep.chief != current_user.id and current_user.id != 1:
-#         abort(403)
-#
-#     if request.method == "GET":
-#         form.title.data = dep.title
-#         form.chief.data = dep.chief
-#         form.email.data = dep.email
-#         form.members.data = dep.members
-#
-#     if form.validate_on_submit():
-#         dep.title = form.title.data
-#         dep.chief = form.chief.data
-#         dep.email = form.email.data
-#         dep.members = form.members.data
-#         db_sess.commit()
-#         return redirect('/departments')
-#
-#     return render_template('adddep.html', title='Редактирование департамента', form=form)
-#
-#
-# @app.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def jobs_delete(id):
-#     db_sess = db_session.create_session()
-#     jobs = db_sess.query(Jobs).filter(Jobs.id == id,
-#                                       Jobs.team_leader == current_user.id | current_user.id == 1,
-#                                       ).first()
-#     if jobs:
-#         db_sess.delete(jobs)
-#         db_sess.commit()
-#     else:
-#         abort(404)
-#     return redirect('/')
-#
-#
-# @app.route('/deps_delete/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def deps_delete(id):
-#     db_sess = db_session.create_session()
-#     deps = db_sess.query(Department).filter(Department.id == id,
-#                                             Department.chief == current_user.id | current_user.id == 1,
-#                                             ).first()
-#     if deps:
-#         db_sess.delete(deps)
-#         db_sess.commit()
-#     else:
-#         abort(404)
-#     return redirect('/departments')
-#
-#
 
 
 def main():

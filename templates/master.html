@@ -14,10 +14,12 @@
             <div id="map" style="width: 818px; height: 542px;"></div>
         </div>
         <div class="col">
-            <div class="card" style="width: 22rem; height: 34rem;">
-                <img src="{{ url_for('static', filename='images/for_alt_card.png') }}" class="card-img-top"
-                     id="img-for-card" alt="Изображение объекта">
-                <div class="card-body">
+            <div class="card city-card is-empty">
+                <img src="{{ url_for('static', filename='images/for_alt_card.png') }}"
+                     class="card-img-top city-card-img"
+                     id="img-for-card"
+                     alt="Изображение объекта">
+                <div class="card-body city-card-body">
                     <h5 class="card-title" id="title-for-card">{{ card_title }}</h5>
                     <p class="card-text" id="text-for-card">{{ card_text }}</p>
                 </div>

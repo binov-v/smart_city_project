@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tickets.css') }}">
 <script src="https://api-maps.yandex.ru/v3/?apikey=9b29f72a-66c1-4c94-9052-8f3bfef5e7f6&lang=ru_RU"></script>
 <script src="{{ url_for('static', filename='js/yamap_ticket_new.js') }}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="container-xxl">
-    <div class="col-md-8 ticket-main-panel">
+    {% if is_it_for_moder %}
+    <div class="title-text mb-5" align="center">Модерация заявок</div>
+    {% endif %}
+    <div class="col-md-8 ticket-main-panel mx-auto">
         <div class="ticket-list">
             {% for ticket in list_tickets %}
             <a href="{% if is_it_for_moder %}/tickets/moderation/{{ ticket.id }}{% else %}/tickets/{{ ticket.id }}{% endif %}"
@@ -22,7 +25,11 @@
                         </div>
 
                         <div class="text-dark small">
-                            {{ ticket.appeal_text if ticket.appeal_text else "Без описания" }}
+                            {% if ticket.appeal_text|length > 20 %}
+                            {{ ticket.appeal_text[:30] }}<span>...</span>
+                            {% else %}
+                            {{ ticket.appeal_text }}
+                            {% endif %}
                         </div>
                     </div>
 
