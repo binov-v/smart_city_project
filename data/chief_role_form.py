@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, SelectField, RadioField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Optional
 
 
 class SelectRoleForm(FlaskForm):
@@ -10,9 +10,7 @@ class SelectRoleForm(FlaskForm):
                            ('transport', 'Дороги и транспорт'),
                            ('improvement_and_eco', 'Благоустройство и экология'),
                            ('communal', 'ЖКХ'),
-                           ('safety', 'Безопасность и правопорядок')
-                       ]
-                       )
+                           ('safety', 'Безопасность и правопорядок')], validators=[Optional()])
     role_field = RadioField(''
                             'Роль',
                             choices=[

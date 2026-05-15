@@ -6,6 +6,7 @@ from flask import jsonify
 parser = reqparse.RequestParser()
 parser.add_argument('user_id', required=False, type=int, location=['args'])
 parser.add_argument('moderation_stage', type=bool, location=['args'])
+parser.add_argument('for_department', type=int, location=['args'])
 
 
 class TicketsListResource(Resource):
@@ -33,6 +34,15 @@ class TicketsListResource(Resource):
                         for item in tickets
                     ]
                 })
+            elif args.get('for_department'):
+                tickets_for_dep = session.query(Ticket).filter(Ticket.stated_department == args['for_department'], Ticket.process_level == 2).all()
+                return jsonify({
+                    'tickets': [
+                        item.to_dict(only=('id', 'appeal_creator', 'appeal_text', 'appeal_photo_path',
+                                           'process_level', 'marker_id', 'created_date', 'stated_department', 'chief_note'))
+                        for item in tickets_for_dep
+                    ]
+                })
         finally:
             session.close()
 
@@ -49,7 +59,7 @@ class TicketResource(Resource):
                 'ticket': ticket.to_dict(only=(
                     'id', 'appeal_creator', 'appeal_text', 'appeal_photo_path',
                     'process_level', 'marker_id', 'created_date', 'stated_department',
-                    'dep_rel.chief_rel.name'
+                    'dep_rel.chief_rel.name', 'appeal_answer_text', 'appeal_answer_photo_path', 'chief_note'
                 ))
             })
         finally:

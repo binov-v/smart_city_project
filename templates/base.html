@@ -70,12 +70,29 @@
                                 Модерация
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="usersDropdown">
+                                {% if current_user.user_role == 1 %}
                                 <li><a class="dropdown-item" href="/users">Управление пользователями</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="/tickets/moderation">Управление заявками</a></li>
+                                {% if current_user.user_role == 2 %}
+                                <li><a class="dropdown-item" href="/tickets/department_solution">Для департамента</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                {% endif %}
                             </ul>
+                        </li>
+                    </ul>
+                    {% endif %}
+
+                    {% if current_user.user_role == 2 %}
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/tickets/department_solution">Для департамента</a>
                         </li>
                     </ul>
                     {% endif %}

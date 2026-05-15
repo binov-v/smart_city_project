@@ -31,124 +31,150 @@
                             <img src="{{ url_for('static', filename=user_ticket.appeal_photo_path) }}" class="img-fluid"
                                  alt="Фото обращения">
                         </div>
-                    </div>
-                    {% if (user_ticket.process_level == 3) or (user_ticket.process_level == 2)%}
-                    <div class="ticket-comment" data-controller="photoswipe">
-                        <div class="comment-author">
-                            <div class="comment-avatar"
-                                 style="background-image: url('{{ url_for('static', filename='images/worker_photo.png') }}')"></div>
-                            <span class="d-sm-none">
+                        {% if (user_ticket.process_level == 3) or (user_ticket.process_level == 2)%}
+                        <div class="ticket-comment" data-controller="photoswipe">
+                            <div class="comment-author">
+                                <div class="comment-avatar"
+                                     style="background-image: url('{{ url_for('static', filename='images/worker_photo.png') }}')"></div>
+                                <span class="d-sm-none">
                                 <span class="name">{{ user_ticket.dep_rel.chief_rel.name }}</span>
                                 <span>{{ user_ticket.closed_date }}</span>
                             </span>
-                        </div>
-                        <div class="comment-container">
-                            <div class="bg-primary-subtle comment-body">
-                                <div class="comment-username d-none d-sm-block">
-                                    <span class="name">{{ user_ticket.dep_rel.chief_rel.name }}</span>
-                                    <span>{{ user_ticket.closed_date }}</span>
-                                </div>
-                                <div class="comment-text">
-                                    <p>
-                                        {{ user_ticket.appeal_answer_text }}
-                                    </p>
+                            </div>
+                            <div class="comment-container">
+                                <div class="bg-primary-subtle comment-body">
+                                    <div class="comment-username d-none d-sm-block">
+                                        <span class="name">{{ user_ticket.dep_rel.chief_rel.name }}</span>
+                                        <span>{{ user_ticket.closed_date }}</span>
+                                    </div>
+                                    <div class="comment-text">
+                                        <p>
+                                            {{ user_ticket.appeal_answer_text }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
+                        <hr class="mb-2 mt-2">
+                        {% if is_it_for_moder %}
+                        <form action="" method="post" class="mt-3">
+                            <div class="row g-4 align-items-start">
+                                <div class="col-md-6">
+
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="department_name"
+                                               id="nameTransport" value="1" {% if user_ticket.stated_department== 1
+                                               %}checked{% endif %}>
+                                        <label class="form-check-label" for="nameTransport">
+                                            Дороги и транспорт
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="department_name"
+                                               id="nameEcology"
+                                               value="2" {% if user_ticket.stated_department== 2 %}checked{% endif %}>
+                                        <label class="form-check-label" for="nameEcology">
+                                            Благоустройство и экология
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="department_name"
+                                               id="nameCommunal" value="3" {% if user_ticket.stated_department== 3
+                                               %}checked{% endif %}>
+                                        <label class="form-check-label" for="nameCommunal">
+                                            ЖКХ
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="department_name"
+                                               id="nameSafety"
+                                               value="4" {% if user_ticket.stated_department== 4 %}checked{% endif %}>
+                                        <label class="form-check-label" for="nameSafety">
+                                            Безопасность и правопорядок
+                                        </label>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4 mt-6 d-flex flex-column gap-3 pt-2">
+                                    <button type="submit" name="action" value="confirmBtn"
+                                            class="btn btn-success w-100 py-2">
+                                        Подтвердить
+                                    </button>
+
+                                    <button type="submit" name="action" value="rejectBtn"
+                                            class="btn btn-danger w-100 py-2">
+                                        Отклонить
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                    <hr class="mb-2 mt-2">
-                    {% if is_it_for_moder %}
-                    <form action="" method="post" class="mt-3">
-                        <div class="row g-4 align-items-start">
-                            <div class="col-md-6">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="radio" name="department_name"
-                                           id="nameTransport" {% if user_ticket.stated_department== 1 %}checked{% endif
-                                           %}>
-                                    <label class="form-check-label" for="nameTransport">
-                                        Дороги и транспорт
-                                    </label>
-                                </div>
-
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="radio" name="department_name"
-                                           id="nameEcology" {% if user_ticket.stated_department== 2 %}checked{% endif
-                                           %}>
-                                    <label class="form-check-label">
-                                        Благоустройство и экология
-                                    </label>
-                                </div>
-
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="radio" name="department_name"
-                                           id="nameCommunal" {% if user_ticket.stated_department== 3 %}checked{% endif
-                                           %}>
-                                    <label class="form-check-label">
-                                        ЖКХ
-                                    </label>
-                                </div>
-
-                                <div class="form-check mb-0">
-                                    <input class="form-check-input" type="radio" name="department_name" id="nameSafety"
-                                           {% if user_ticket.stated_department== 4 %}checked{% endif %}>
-                                    <label class="form-check-label">
-                                        Безопасность и правопорядок
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 mt-6 d-flex flex-column gap-3 pt-2">
-                                <button type="submit"
-                                        name="action" value="confirmBtn" class="btn btn-success w-100 py-2">
-                                    Подтвердить
-                                </button>
-                                <button type="submit"
-                                        name="action" class="btn btn-danger w-100 py-2" value="rejectBtn">
-                                    Отклонить
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                    {% endif %}
                 </div>
-            </div>
-            <div class="col-md-4 ticket-info-panel">
-                <div class="sticky-info-panel">
-                    <div class="row mb-3">
-                        <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Статус</div>
-                        <div class="col-xl-8 col-sm-8 col-md-12">
-                            {% if user_ticket.process_level == 4 %}
-                            <span class="badge bg-danger"> Отклонена </span>
-                            {% elif user_ticket.process_level == 3 %}
-                            <span class="badge bg-secondary"> Закрыта </span>
-                            {% elif user_ticket.process_level == 2 %}
-                            <span class="badge bg-primary"> Выполняется </span>
-                            {% elif user_ticket.process_level == 1 %}
-                            <span class="badge bg-warning text-dark"> На модерации </span>
-                            {% endif %}
+                <div class="col-md-4 ticket-info-panel">
+                    <div class="sticky-info-panel">
+                        <div class="row mb-3">
+                            <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Статус</div>
+                            <div class="col-xl-8 col-sm-8 col-md-12">
+                                {% if user_ticket.process_level == 4 %}
+                                <span class="badge bg-danger"> Отклонена </span>
+                                {% elif user_ticket.process_level == 3 %}
+                                <span class="badge bg-secondary"> Закрыта </span>
+                                {% elif user_ticket.process_level == 2 %}
+                                <span class="badge bg-primary"> Выполняется </span>
+                                {% elif user_ticket.process_level == 1 %}
+                                <span class="badge bg-warning text-dark"> На модерации </span>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Создана</div>
-                        <div class="col-xl-8 col-sm-8 col-md-12">{{ user_ticket.created_date }}</div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Ответственный</div>
-                        <div class="col-xl-8 col-sm-8 col-md-12">
-                            {% if user_ticket.process_level != 4 %}
-                            {% if user_ticket.dep_rel and user_ticket.dep_rel.chief_rel %}
-                            {% endif %}
-                            {{ user_ticket.dep_rel.chief_rel.name }}
-                            {% else %}
-                            <span class="text-muted">Не назначен</span>
-                            {% endif %}
+                        <div class="row mb-3">
+                            <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Создана</div>
+                            <div class="col-xl-8 col-sm-8 col-md-12">{{ user_ticket.created_date }}</div>
                         </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-4 col-sm-4 col-md-12 fw-semibold">Ответственный</div>
+                            <div class="col-xl-8 col-sm-8 col-md-12">
+                                {% if user_ticket.process_level != 4 and user_ticket.process_level != 1%}
+                                {% if user_ticket.dep_rel and user_ticket.dep_rel.chief_rel %}
+                                {% endif %}
+                                {{ user_ticket.dep_rel.chief_rel.name }}
+                                {% else %}
+                                <span class="text-muted">Не назначен</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="mb-2 mt-2">
+                        {% if is_it_for_chief %}
+                        <form action="" method="post" enctype="multipart/form-data" class="mt-3">
+                            <input type="hidden" name="action" value="chief_answer">
+
+                            <div class="mb-3">
+                                <label for="chief_answer_text" class="form-label">Ответ по заявке</label>
+                                <textarea id="chief_answer_text" name="chief_answer_text" class="form-control" rows="6"
+                                          placeholder="Напишите ответ заявителю..."
+                                ></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="chief_answer_file" class="form-label">Файл к ответу</label>
+                                <input type="file" id="chief_answer_file" name="chief_answer_file" class="form-control"
+                                       accept=".jpg,.png,.jpeg,.dng,.hevc,.pdf">
+                                <div class="form-text">Файл необязателен.</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Отправить ответ
+                            </button>
+                        </form>
+                        {% endif %}
                     </div>
-                    <hr class="mb-2 mt-2">
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}

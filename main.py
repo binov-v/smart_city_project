@@ -1,7 +1,7 @@
 import requests
 import datetime
 
-from flask import Flask, render_template, redirect, request, abort
+from flask import Flask, render_template, redirect, request, abort, url_for
 from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user, login_required
 
@@ -113,7 +113,74 @@ def one_ticket(tick_id):
         user_ticket = data.get('ticket')
     else:
         user_ticket = None
-    return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=False)
+    return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=False, is_it_for_chief=False)
+
+
+@app.route('/tickets/department_solution/<int:tick_id>', methods=['GET', 'POST'])
+@login_required
+def ticket_solution(tick_id):
+    response = requests.get(f'http://localhost:5000/api/v1/tickets/{tick_id}')
+    if response.status_code == 200:
+        data = response.json()
+        user_ticket = data.get('ticket')
+    else:
+        user_ticket = None
+
+    if request.method == 'POST':
+        answer_text = request.form.get('answer_text')
+        file = request.files.get('file')
+
+        relative_path = None
+        file_path = None
+
+        if file and file.filename:
+            filename = str(uuid.uuid4()) + "_" + secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            relative_path = f"uploads/tickets/{filename}"
+
+            file.save(file_path)
+
+        session = db_session.create_session()
+        try:
+            ticket = session.query(Ticket).filter(Ticket.id == tick_id).first()
+
+            ticket.answer_text = answer_text
+            ticket.answer_file_path = relative_path
+            ticket.process_level = 3
+
+            session.commit()
+        finally:
+            session.close()
+
+        return redirect(url_for('ticket_solution', tick_id=tick_id))
+
+    return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=False, is_it_for_chief=True)
+
+
+@app.route('/tickets/department_solution', methods=['GET', 'POST'])
+@login_required
+def list_department_ticket():
+    session = db_session.create_session()
+    dep = session.query(Department.id).filter(Department.chief == current_user.id).first()
+    dep_id = dep[0] if dep else None
+
+    if request.method == 'POST':
+        ticket_id = request.form.get('ticket_id')
+        chief_note = request.form.get('chief_note')
+
+        ticket = session.query(Ticket).filter(Ticket.id == ticket_id, Ticket.stated_department == dep_id).first()
+        if ticket:
+            ticket.chief_note = chief_note
+            session.commit()
+        session.close()
+        return redirect(url_for('list_department_ticket'))
+
+    response = requests.get('http://localhost:5000/api/v1/tickets', params={'for_department': dep_id})
+    data = response.json()
+    user_tickets = data.get('tickets', [])
+    session.close()
+
+    return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=False, is_it_for_chief=True)
 
 
 @app.route('/tickets', methods=['GET', 'POST'])
@@ -122,7 +189,7 @@ def list_user_ticket():
     response = requests.get('http://localhost:5000/api/v1/tickets', params={'user_id': current_user.id})
     data = response.json()
     user_tickets = data.get('tickets', [])
-    return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=False)
+    return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=False, is_it_for_chief=False)
 
 
 @app.route('/tickets/new', methods=['GET', 'POST'])
@@ -159,7 +226,15 @@ def new_ticket():
                 session.add(marker)
                 session.commit()
 
-                dep = {'transport': 1, 'improvement_and_eco': 2, 'communal': 3, 'safety': 4}
+                dep = {
+                    'transport': 1,
+                    'improvement_and_eco': 2,
+                    'communal': 3,
+                    'safety': 4
+                }
+
+                if form.type.data not in dep:
+                    return render_template('add_ticket.html', form=form, message="Некорректный тип обращения")
                 ticket = Ticket(
                     appeal_creator=current_user.id,
                     appeal_text=form.textarea.data,
@@ -210,16 +285,23 @@ def assign_role(id):
                         if dept:
                             past_chief = session.query(User).filter(User.id == dept.chief).first()
                             if past_chief:
-                                past_chief.department = None
                                 if past_chief.user_role != 1:
                                     past_chief.user_role = None
                                     past_chief.modified_date = datetime.datetime.now()
 
                             dept.chief = user.id
 
-                    user.user_role = int(form.role_field.data)
-                    user.department = dept.chief_rel.id
-                    user.modified_date = datetime.datetime.now()
+                        user.user_role = int(form.role_field.data) if form.role_field.data in ('1', '2', '3') else None
+                        user.modified_date = datetime.datetime.now()
+                    elif form.role_field.data in ('1', '3', '4'):
+                        dept = session.query(Department).filter(Department.chief == user.id).first()
+                        if dept:
+                            dept.chief = None
+                        if form.role_field.data == '4':
+                            user.user_role = None
+                        else:
+                            user.user_role = int(form.role_field.data)
+                        user.modified_date = datetime.datetime.now()
                     session.commit()
                     return redirect('/users')
             return render_template('assign_role.html', user=user, form=form)
@@ -233,13 +315,9 @@ def tickets_list_moderation():
     response = requests.get('http://localhost:5000/api/v1/tickets', params={'moderation_stage': True})
     data = response.json()
     user_tickets = data.get('tickets', [])
-    return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=True)
+    return render_template('tickets.html', list_tickets=user_tickets, is_it_for_moder=True, is_it_for_chief=False)
 
 
-# !!!!!!!!!Если делаем пользователя главой департамента, то надо указать, главой какого он стал
-# !
-# !
-# !
 @app.route('/tickets/moderation/<int:tick_id>', methods=['GET', 'POST'])
 @login_required
 def ticket_moderation(tick_id):
@@ -265,7 +343,7 @@ def ticket_moderation(tick_id):
         finally:
             session.close()
 
-    return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=True)
+    return render_template('ticket_info.html', user_ticket=user_ticket, is_it_for_moder=True, is_it_for_chief=False)
 
 
 @app.route('/logout')

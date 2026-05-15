@@ -26,7 +26,7 @@ class UsersListResource(Resource):
             return jsonify(
                 [
                     item.to_dict(only=('id', 'surname', 'name', 'age', 'address',
-                                       'email', 'modified_date', 'user_role', 'department'))
+                                       'email', 'modified_date', 'user_role'))
                     for item in users
                 ]
             )

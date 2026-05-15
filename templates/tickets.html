@@ -10,42 +10,64 @@
 <div class="container-xxl">
     {% if is_it_for_moder %}
     <div class="title-text mb-5" align="center">Модерация заявок</div>
+    {% elif is_it_for_chief %}
+    <div class="title-text mb-5" align="center">Заявки департамента</div>
     {% endif %}
+
     <div class="col-md-8 ticket-main-panel mx-auto">
         <div class="ticket-list">
             {% for ticket in list_tickets %}
-            <a href="{% if is_it_for_moder %}/tickets/moderation/{{ ticket.id }}{% else %}/tickets/{{ ticket.id }}{% endif %}"
-               class="ticket-item mb-2">
+            <div class="card mb-3 border shadow-sm bg-white">
 
-                <div class="row align-items-center">
-                    <div class="col-md-9">
-                        <div class="mb-1">
-                            <span class="text-primary fw-bold">Заявка #{{ ticket.id }}</span>
-                            <span class="text-muted"> - {{ ticket.created_date }}</span>
+                <a href="{% if is_it_for_moder %}/tickets/moderation/{{ ticket.id }}{% elif is_it_for_chief %}/tickets/department_solution/{{ ticket.id }}{% else %}/tickets/{{ ticket.id }}{% endif %}"
+                   class="text-decoration-none text-dark p-3 d-block ticket-item-link">
+
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <div class="mb-1">
+                                <span class="text-primary fw-bold">Заявка #{{ ticket.id }}</span>
+                                <span class="text-muted"> - {{ ticket.created_date }}</span>
+                            </div>
+
+                            <div class="text-dark small">
+                                {% if ticket.appeal_text|length > 30 %}
+                                {{ ticket.appeal_text[:30] }}<span>...</span>
+                                {% else %}
+                                {{ ticket.appeal_text }}
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="text-dark small">
-                            {% if ticket.appeal_text|length > 20 %}
-                            {{ ticket.appeal_text[:30] }}<span>...</span>
-                            {% else %}
-                            {{ ticket.appeal_text }}
+                        <div class="col-md-3 text-end">
+                            {% if ticket.process_level == 4 %}
+                            <span class="badge bg-danger"> Отклонена </span>
+                            {% elif ticket.process_level == 3 %}
+                            <span class="badge bg-secondary"> Закрыта </span>
+                            {% elif ticket.process_level == 2 %}
+                            <span class="badge bg-primary"> Выполняется </span>
+                            {% elif ticket.process_level == 1 %}
+                            <span class="badge bg-warning text-dark"> На модерации </span>
                             {% endif %}
                         </div>
                     </div>
+                </a>
 
-                    <div class="col-md-3 text-end">
-                        {% if ticket.process_level == 4 %}
-                        <span class="badge bg-danger"> Отклонена </span>
-                        {% elif ticket.process_level == 3 %}
-                        <span class="badge bg-secondary"> Закрыта </span>
-                        {% elif ticket.process_level == 2 %}
-                        <span class="badge bg-primary"> Выполняется </span>
-                        {% elif ticket.process_level == 1 %}
-                        <span class="badge bg-warning text-dark"> На модерации </span>
-                        {% endif %}
-                    </div>
+                {% if is_it_for_chief %}
+                <div class="card-footer bg-white border-top-0 pt-0 pb-3 px-3">
+                    <form action="/tickets/department_solution" method="POST" class="w-100">
+                        <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light text-muted small">Поручено:</span>
+                            <input type="text" name="chief_note" class="form-control"
+                                   placeholder="ФИО сотрудника или комментарий..."
+                                   value="{{ ticket.chief_note if ticket.chief_note else '' }}">
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </form>
                 </div>
-            </a>
+                {% endif %}
+
+            </div>
             {% endfor %}
         </div>
     </div>
