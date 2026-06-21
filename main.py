@@ -322,6 +322,7 @@ def tickets_list_moderation():
 @login_required
 def ticket_moderation(tick_id):
     response = requests.get(f'http://localhost:5000/api/v1/tickets/{tick_id}')
+
     if response.status_code == 200:
         data = response.json()
         user_ticket = data.get('ticket')
@@ -337,6 +338,7 @@ def ticket_moderation(tick_id):
                 ticket.process_level = 4
             elif button_value == 'confirmBtn':
                 ticket.process_level = 2
+                print(request.form)
                 ticket.stated_department = request.form.get('department_name')
             session.commit()
             return redirect('/tickets/moderation')
@@ -355,7 +357,6 @@ def logout():
 
 def main():
     db_session.global_init("db/smart_city.db")
-    # app.run(host='localhost', port=5000)
     serve(app, host='localhost', port=5000)
 
 

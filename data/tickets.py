@@ -22,7 +22,7 @@ class Ticket(SqlAlchemyBase, SerializerMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     closed_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
     chief_note = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    stated_department = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("departments.id"), nullable=True)
+    stated_department = sqlalchemy.Column(sqlalchemy.Integer, ForeignKey("departments.id"), nullable=False)
     dep_rel = orm.relationship("Department", back_populates="ticket_dep_rel")
 
     owner = orm.relationship("User", back_populates="tickets")

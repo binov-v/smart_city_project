@@ -48,11 +48,13 @@
                                     <span class="name">{{ user_ticket.dep_rel.chief_rel.name }}</span>
                                     <span>{{ user_ticket.closed_date }}</span>
                                 </div>
+                                {% if (user_ticket.process_level == 3) %}
                                 <div class="comment-text">
                                     <p>
                                         {{ user_ticket.appeal_answer_text }}
                                     </p>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -64,7 +66,8 @@
                             <div class="col-md-6">
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="department_name"
-                                           id="nameTransport" {% if user_ticket.stated_department== 1 %}checked{% endif
+                                           id="nameTransport" value="1" {% if user_ticket.stated_department== 1
+                                           %}checked{% endif
                                            %}>
                                     <label class="form-check-label" for="nameTransport">
                                         Дороги и транспорт
@@ -73,7 +76,8 @@
 
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="department_name"
-                                           id="nameEcology" {% if user_ticket.stated_department== 2 %}checked{% endif
+                                           id="nameEcology" value="2" {% if user_ticket.stated_department== 2
+                                           %}checked{% endif
                                            %}>
                                     <label class="form-check-label">
                                         Благоустройство и экология
@@ -82,7 +86,8 @@
 
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="department_name"
-                                           id="nameCommunal" {% if user_ticket.stated_department== 3 %}checked{% endif
+                                           id="nameCommunal" value="3" {% if user_ticket.stated_department== 3
+                                           %}checked{% endif
                                            %}>
                                     <label class="form-check-label">
                                         ЖКХ
@@ -91,6 +96,7 @@
 
                                 <div class="form-check mb-0">
                                     <input class="form-check-input" type="radio" name="department_name" id="nameSafety"
+                                           value="4"
                                            {% if user_ticket.stated_department== 4 %}checked{% endif %}>
                                     <label class="form-check-label">
                                         Безопасность и правопорядок
